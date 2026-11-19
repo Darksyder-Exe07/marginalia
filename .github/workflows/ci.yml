@@ -20,3 +20,51 @@ jobs:
       - uses: actions/checkout@v6
       - name: Build the software and the unit tests
         run: make
+
+  
+  sast:
+    name: SAST
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Semgrep
+        run: pipx install semgrep==1.182.1
+
+      - name: Run SAST
+        run: make sast
+
+  tests:
+    name: Tests
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build the software and the unit tests
+        run: make
+
+      - name: Run tests with ASan and UBSan
+        run: make sanitizers
+
+      - name: Install Valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+
+      - name: Run tests with Valgrind
+        run: make valgrind
+
+  dast:
+    name: DAST
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build the software
+        run: make
+
+      - name: Run DAST
+        run: make dast
