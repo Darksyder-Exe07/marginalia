@@ -101,6 +101,11 @@ static std::string commandCustomer(Store &store, std::istringstream &in)
         return "Error: missing customer name";
     }
 
+    if (discount < 0 || discount > 100)
+    {
+        return "Error: discount must be between 0 and 100";
+    }
+
     store.invoice.reset(new Invoice(1, Customer(id, name, discount)));
     return "Invoice opened for customer " + std::to_string(id);
 }
@@ -121,6 +126,11 @@ static std::string commandAuthor(Store &store, std::istringstream &in)
     if (name.empty())
     {
         return "Error: missing author name";
+    }
+
+    if (name.size() > 47)
+    {
+        return "Error: author name must have at most 47 bytes";
     }
 
     store.authors[id] = Author(id, name.c_str(), gender[0]);
@@ -144,6 +154,11 @@ static std::string commandBook(Store &store, std::istringstream &in)
     if (title.empty())
     {
         return "Error: missing book title";
+    }
+
+    if (title.size() > 63)
+    {
+        return "Error: book title must have at most 63 bytes";
     }
 
     std::map<int, Author>::iterator author = store.authors.find(author_id);
